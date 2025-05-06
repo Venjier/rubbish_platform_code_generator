@@ -24,3 +24,4 @@ export default {
 3. 将 scss 语法转换成 css
 4. 将 methods 中的所有函数移动到 $com.method 下，并将所有函数转换成显式的 function 写法
 5. 把 data 返回的对象全部转移到 custom 对象下
+6. 把所有函数体中 this.data 的引用改为 this.custom.data 的形式
