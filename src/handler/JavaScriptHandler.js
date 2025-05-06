@@ -27,6 +27,8 @@ export default async function JavaScriptHandler(script, filePath, fileName) {
     ]
 
 
+    const dataKeys = []
+
     // 创建 main 函数
     const functionDeclaration = BabelTypes.functionDeclaration(
         BabelTypes.identifier('main'), // 函数名称
@@ -193,6 +195,7 @@ export default async function JavaScriptHandler(script, filePath, fileName) {
             if (BabelTypes.isObjectMethod(path.node) && path.node.key && path.node.key.name === 'data') {
                 const returnObject = path.node.body.body.find(item => item.type === 'ReturnStatement')
                 customBody.push(...returnObject.argument.properties.map(item => {
+                    dataKeys.push(item.key.name)
                     if (BabelTypes.isObjectMethod(item)) return functionTransform(item)
                     return item
                 }))
@@ -204,9 +207,9 @@ export default async function JavaScriptHandler(script, filePath, fileName) {
             }
         },
         MemberExpression(path) { // 给 data 中的变量引用加上 custom
-            if (path.node.object.type === 'ThisExpression' && path.node.property.type === 'Identifier' && path.node.property.name === 'data') {
+            if (BabelTypes.isThisExpression(path.node.object) && BabelTypes.isIdentifier(path.node.property)) {
+                if (path.node.property.name === 'custom' || !dataKeys.includes(path.node.property.name)) return
                 path.node.object = parser.parseExpression('this.custom');
-                path.node.property.name = 'data';
             }
         }
     });
