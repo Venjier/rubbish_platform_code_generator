@@ -1,8 +1,12 @@
 {
   "name": "rubbish_platform_code_generator",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "垃圾平台代码生成器",
   "main": "src/RubbishPlatformCodeGenerator.js",
+  "repository": {
+    "type": "git",
+    "directory": "https://github.com/Venjier/rubbish_platform_code_generator.git"
+  },
   "type": "module",
   "license": "MIT",
   "author": "写代码供丈母娘考研的 马文杰",
