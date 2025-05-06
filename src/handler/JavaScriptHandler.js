@@ -203,14 +203,24 @@ export default async function JavaScriptHandler(script, filePath, fileName) {
             }
             if (BabelTypes.isObjectProperty(path.node) && path.node.key && path.node.key.name === 'methods') {
                 if (path.node.value && path.node.value.properties) {
-                    methodsBody.push(...path.node.value.properties.map(item => functionTransform(item)))
+                    methodsBody.push(...path.node.value.properties.map(item => {
+                        console.log(item)
+                        methodsKeys.push(item.key.name)
+                        return functionTransform(item)
+                    }))
                 }
             }
         },
         MemberExpression(path) { // 给 data 中的变量引用加上 custom
             if (BabelTypes.isThisExpression(path.node.object) && BabelTypes.isIdentifier(path.node.property)) {
-                if (path.node.property.name !== 'custom' && dataKeys.includes(path.node.property.name)) return path.node.object = parser.parseExpression('this.custom');
-                if (path.node.property.name !== 'method' && methodsKeys.includes(path.node.property.name)) return path.node.object = parser.parseExpression('this.method');
+                if (path.node.property.name !== 'custom' && dataKeys.includes(path.node.property.name)) {
+                    path.node.object = parser.parseExpression('this.custom');
+                    return
+                }
+                if (path.node.property.name !== 'method' && methodsKeys.includes(path.node.property.name)) {
+                    path.node.object = parser.parseExpression('this.method');
+                    return
+                }
             }
         }
     });
@@ -234,7 +244,6 @@ export default async function JavaScriptHandler(script, filePath, fileName) {
 
 function functionTransform(func) {
     if (!BabelTypes.isObjectMethod(func)) throw new Error('This is not a function')
-    if (func.key.name === 'add') console.log(func.body.body[0].expression.arguments[0].properties)
     const params = func.params.map(item => BabelTypes.identifier(item.name))
     return BabelTypes.objectProperty(BabelTypes.identifier(func.key.name), BabelTypes.functionExpression(null, params, func.body, func.generator, func.async))
 }
