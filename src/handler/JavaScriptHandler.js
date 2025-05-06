@@ -203,6 +203,12 @@ export default async function JavaScriptHandler(script, filePath, fileName) {
                 }
             }
         },
+        MemberExpression(path) { // 给 data 中的变量引用加上 custom
+            if (path.node.object.type === 'ThisExpression' && path.node.property.type === 'Identifier' && path.node.property.name === 'data') {
+                path.node.object = parser.parseExpression('this.custom');
+                path.node.property.name = 'data';
+            }
+        }
     });
 
 
@@ -224,6 +230,7 @@ export default async function JavaScriptHandler(script, filePath, fileName) {
 
 function functionTransform(func) {
     if (!BabelTypes.isObjectMethod(func)) throw new Error('This is not a function')
+    if (func.key.name === 'add') console.log(func.body.body[0].expression.arguments[0].properties)
     const params = func.params.map(item => BabelTypes.identifier(item.name))
     return BabelTypes.objectProperty(BabelTypes.identifier(func.key.name), BabelTypes.functionExpression(null, params, func.body, func.generator, func.async))
 }
