@@ -28,6 +28,7 @@ export default async function JavaScriptHandler(script, filePath, fileName) {
 
 
     const dataKeys = []
+    const methodsKeys = []
 
     // 创建 main 函数
     const functionDeclaration = BabelTypes.functionDeclaration(
@@ -208,8 +209,8 @@ export default async function JavaScriptHandler(script, filePath, fileName) {
         },
         MemberExpression(path) { // 给 data 中的变量引用加上 custom
             if (BabelTypes.isThisExpression(path.node.object) && BabelTypes.isIdentifier(path.node.property)) {
-                if (path.node.property.name === 'custom' || !dataKeys.includes(path.node.property.name)) return
-                path.node.object = parser.parseExpression('this.custom');
+                if (path.node.property.name !== 'custom' && dataKeys.includes(path.node.property.name)) return path.node.object = parser.parseExpression('this.custom');
+                if (path.node.property.name !== 'method' && methodsKeys.includes(path.node.property.name)) return path.node.object = parser.parseExpression('this.method');
             }
         }
     });
