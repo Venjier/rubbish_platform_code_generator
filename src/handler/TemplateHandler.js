@@ -37,7 +37,8 @@ export default function templateHandler(dom, fileName, filePath) {
             if (node.attrs && node.attrs.length) {
                 for (let i = 0; i < node.attrs.length; i++) {
                     const attr = node.attrs[i]
-                    const methodName = attr.value.substring(0, attr.value.indexOf('('))
+                    const withParams = attr.value.indexOf('(') >= 0
+                    const methodName = attr.value.substring(0, withParams ? attr.value.indexOf('(') : attr.value)
                     if ((attr.name.startsWith('@') || attr.name.startsWith(':') || attr.name.startsWith('v-')) && methodsNames.includes(methodName)) attr.value = `$com.method.${attr.value}`
                     if (attr.name && !attr.value) {
                         attr.name = `:${attr.name}`
