@@ -1,6 +1,6 @@
 {
   "name": "rubbish_platform_code_generator",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "description": "垃圾平台代码生成器",
   "main": "src/RubbishPlatformCodeGenerator.js",
   "repository": {

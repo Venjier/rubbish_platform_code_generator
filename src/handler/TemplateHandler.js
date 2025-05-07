@@ -37,10 +37,11 @@ export default function templateHandler(dom, fileName, filePath) {
             if (node.attrs && node.attrs.length) {
                 for (let i = 0; i < node.attrs.length; i++) {
                     const attr = node.attrs[i]
-                    if ((attr.name.startsWith('@') || attr.name.startsWith(':') || attr.name.startsWith('v-')) && methodsNames.includes(attr.value)) attr.value = `$com.method.${attr.value}`
+                    const methodName = attr.value.substring(0, attr.value.indexOf('('))
+                    if ((attr.name.startsWith('@') || attr.name.startsWith(':') || attr.name.startsWith('v-')) && methodsNames.includes(methodName)) attr.value = `$com.method.${attr.value}`
                     if (attr.name && !attr.value) {
-                        attr.value = "true"
                         attr.name = `:${attr.name}`
+                        attr.value = "true"
                     }
                 }
             }

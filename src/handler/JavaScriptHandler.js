@@ -5,7 +5,7 @@ import BabelTraverse from '@babel/traverse'
 import BabelTypes from '@babel/types'
 import BabelGenerator from '@babel/generator'
 
-export default async function JavaScriptHandler(script, filePath, fileName) {
+export default function JavaScriptHandler(script, filePath, fileName) {
     if (!script) return {methodsKeys: [], dataKeys: []}
 
     const dataKeys = []
@@ -43,13 +43,8 @@ export default async function JavaScriptHandler(script, filePath, fileName) {
                         ])
                     ),
                     BabelTypes.objectProperty(
-                        BabelTypes.identifier('$com'),
-                        BabelTypes.objectExpression([
-                            BabelTypes.objectProperty(
-                                BabelTypes.identifier('method'),
-                                BabelTypes.objectExpression(methodsBody)
-                            ),
-                        ])
+                        BabelTypes.identifier('method'),
+                        BabelTypes.objectExpression(methodsBody)
                     ),
                     BabelTypes.objectProperty(
                         BabelTypes.identifier('attribute'),
@@ -238,6 +233,7 @@ export default async function JavaScriptHandler(script, filePath, fileName) {
 
     fs.writeFile(path.join(filePath, fileName, fileName + '.js'), generatedCode, (err) => {
     })
+    console.log('处理 js', methodsKeys)
     return {methodsKeys, dataKeys}
 }
 
