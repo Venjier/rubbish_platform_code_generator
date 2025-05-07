@@ -5,7 +5,7 @@ import BabelTraverse from '@babel/traverse'
 import BabelTypes from '@babel/types'
 import BabelGenerator from '@babel/generator'
 
-export default function JavaScriptHandler(script, filePath, fileName) {
+export default function JavaScriptHandler(script, filePath, fileName, config) {
     if (!script) return {methodsKeys: [], dataKeys: []}
 
     const dataKeys = []
@@ -189,11 +189,35 @@ export default function JavaScriptHandler(script, filePath, fileName) {
             }
             if (BabelTypes.isObjectMethod(path.node) && path.node.key && path.node.key.name === 'data') {
                 const returnObject = path.node.body.body.find(item => item.type === 'ReturnStatement')
-                customBody.push(...returnObject.argument.properties.map(item => {
+
+                // 注入变量
+                if (config && config.injection && config.injection.js && config.injection.js.custom) {
+                    const injection = config.injection.js.custom
+                    for (const key in injection) {
+                        dataKeys.push(key)
+                        switch (typeof injection[key]) {
+                            case "boolean":
+                                customBody.push(BabelTypes.objectProperty(BabelTypes.identifier(key), BabelTypes.booleanLiteral(injection[key])))
+                                break
+                            case "string":
+                                customBody.push(BabelTypes.objectProperty(BabelTypes.identifier(key), BabelTypes.stringLiteral(injection[key])))
+                                break
+                            case "number":
+                                customBody.push(BabelTypes.objectProperty(BabelTypes.identifier(key), BabelTypes.numericLiteral(injection[key])))
+                                break
+                        }
+                    }
+                }
+
+                // 编译 data
+                const properties = []
+                for (const item of returnObject.argument.properties) {
+                    if (dataKeys.includes(item.key.name)) continue
                     dataKeys.push(item.key.name)
-                    if (BabelTypes.isObjectMethod(item)) return functionTransform(item)
-                    return item
-                }))
+                    if (BabelTypes.isObjectMethod(item)) properties.push(functionTransform(item))
+                    properties.push(item)
+                }
+                customBody.push(...properties)
             }
             if (BabelTypes.isObjectProperty(path.node) && path.node.key && path.node.key.name === 'methods') {
                 if (path.node.value && path.node.value.properties) {

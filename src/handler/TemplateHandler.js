@@ -4,7 +4,7 @@ import CSSHandler from "./CSSHandler.js";
 import fs from "fs";
 import * as path from "node:path";
 
-export default function templateHandler(dom, fileName, filePath) {
+export default function templateHandler(dom, fileName, filePath, config) {
 
     const DomObj = parse(dom)
     const stack = [DomObj]
@@ -15,7 +15,7 @@ export default function templateHandler(dom, fileName, filePath) {
         const node = stack.shift()
 
         if (node.nodeName === 'script') {
-            const {methodsKeys = [], dataKeys = []} = JavaScriptHandler(node.childNodes[0].value, filePath, fileName)
+            const {methodsKeys = [], dataKeys = []} = JavaScriptHandler(node.childNodes[0].value, filePath, fileName, config)
             methodsNames.push(...methodsKeys)
             customNames.push(...dataKeys)
         }

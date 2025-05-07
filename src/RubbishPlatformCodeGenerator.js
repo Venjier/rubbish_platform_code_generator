@@ -2,10 +2,9 @@ import fs from 'fs'
 import * as path from "node:path";
 import templateHandler from "./handler/TemplateHandler.js";
 
-export default function RubbishPlatformCodeGenerator() {
+export default function RubbishPlatformCodeGenerator(gloabelConfig) {
     return {
         name: 'transform-file',
-
         load(src, id) {
             const fileSrc = src.substring(src.lastIndexOf('?'), src.length)
             const fileType = fileSrc.substring(src.lastIndexOf('.') + 1, src.length)
@@ -20,7 +19,7 @@ export default function RubbishPlatformCodeGenerator() {
 
             const content = fs.readFileSync(fileSrc, 'utf-8')
 
-            templateHandler(content, fileName, filePath)
+            templateHandler(content, fileName, filePath, gloabelConfig)
 
         },
     }
