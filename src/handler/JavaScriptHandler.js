@@ -6,7 +6,10 @@ import BabelTypes from '@babel/types'
 import BabelGenerator from '@babel/generator'
 
 export default async function JavaScriptHandler(script, filePath, fileName) {
-    if (!script) return
+    if (!script) return {methodsKeys: [], dataKeys: []}
+
+    const dataKeys = []
+    const methodsKeys = []
 
     const ast = parser.parse(script, {sourceType: 'module'})  // 指定源代码是 ES 模块
 
@@ -25,10 +28,6 @@ export default async function JavaScriptHandler(script, filePath, fileName) {
             BabelTypes.identifier('init'),
             BabelTypes.functionExpression(null, [], BabelTypes.blockStatement(initBody)))
     ]
-
-
-    const dataKeys = []
-    const methodsKeys = []
 
     // 创建 main 函数
     const functionDeclaration = BabelTypes.functionDeclaration(
@@ -239,6 +238,7 @@ export default async function JavaScriptHandler(script, filePath, fileName) {
 
     fs.writeFile(path.join(filePath, fileName, fileName + '.js'), generatedCode, (err) => {
     })
+    return {methodsKeys, dataKeys}
 }
 
 function functionTransform(func) {

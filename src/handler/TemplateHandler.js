@@ -10,11 +10,14 @@ export default function templateHandler(dom, fileName, filePath) {
     const stack = [DomObj]
     let template = null
 
+    const methodsNames = [], customNames = []
     while (stack.length) {
         const node = stack.shift()
 
         if (node.nodeName === 'script') {
-            JavaScriptHandler(node.childNodes[0].value, filePath, fileName)
+            const {methodsKeys = [], dataKeys = []} = JavaScriptHandler(node.childNodes[0].value, filePath, fileName)
+            methodsNames.push(...methodsKeys)
+            customNames.push(...dataKeys)
         }
         if (node.nodeName === 'style') {
             CSSHandler(node.childNodes[0].value, filePath, fileName)
@@ -34,7 +37,11 @@ export default function templateHandler(dom, fileName, filePath) {
             if (node.attrs && node.attrs.length) {
                 for (let i = 0; i < node.attrs.length; i++) {
                     const attr = node.attrs[i]
-                    if (attr.name.startsWith('@')) attr.value = `$com.method.${attr.value}`
+                    if ((attr.name.startsWith('@') || attr.name.startsWith(':') || attr.name.startsWith('v-')) && methodsNames.includes(attr.value)) attr.value = `$com.method.${attr.value}`
+                    if (attr.name && !attr.value) {
+                        attr.value = "true"
+                        attr.name = `:${attr.name}`
+                    }
                 }
             }
         }
