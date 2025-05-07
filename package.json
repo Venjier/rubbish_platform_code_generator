@@ -1,6 +1,6 @@
 {
   "name": "rubbish_platform_code_generator",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "垃圾平台代码生成器",
   "main": "src/RubbishPlatformCodeGenerator.js",
   "repository": {
@@ -19,8 +19,6 @@
     "@babel/traverse": "^7.27.1",
     "@babel/types": "^7.27.1",
     "parse5": "^7.3.0",
-    "axios": "^1.9.0",
-    "element-ui": "^2.15.14",
     "sass": "^1.87.0"
   }
 }
