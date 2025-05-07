@@ -22,7 +22,7 @@ export default function templateHandler(dom, fileName, filePath) {
         if (node.nodeName === 'style') {
             CSSHandler(node.childNodes[0].value, filePath, fileName)
         }
-        if (node.nodeName === 'template') {
+        if (node.nodeName === 'template' && node.parentNode.nodeName === 'head') {
             template = node
         }
 
