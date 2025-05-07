@@ -204,12 +204,16 @@ export default function JavaScriptHandler(script, filePath, fileName) {
                 }
             }
         },
+    });
+
+    BabelTraverse.default(ast, {
         MemberExpression(path) { // 给 data 中的变量引用加上 custom
             if (BabelTypes.isThisExpression(path.node.object) && BabelTypes.isIdentifier(path.node.property)) {
                 if (path.node.property.name !== 'custom' && dataKeys.includes(path.node.property.name)) {
                     path.node.object = parser.parseExpression('this.custom');
                     return
                 }
+                // 给方法的调用加上 method
                 if (path.node.property.name !== 'method' && methodsKeys.includes(path.node.property.name)) {
                     path.node.object = parser.parseExpression('this.method');
                     return
@@ -233,7 +237,6 @@ export default function JavaScriptHandler(script, filePath, fileName) {
 
     fs.writeFile(path.join(filePath, fileName, fileName + '.js'), generatedCode, (err) => {
     })
-    console.log('处理 js', methodsKeys)
     return {methodsKeys, dataKeys}
 }
 
