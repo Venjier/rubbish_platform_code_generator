@@ -204,7 +204,6 @@ export default async function JavaScriptHandler(script, filePath, fileName) {
             if (BabelTypes.isObjectProperty(path.node) && path.node.key && path.node.key.name === 'methods') {
                 if (path.node.value && path.node.value.properties) {
                     methodsBody.push(...path.node.value.properties.map(item => {
-                        console.log(item)
                         methodsKeys.push(item.key.name)
                         return functionTransform(item)
                     }))
@@ -244,6 +243,5 @@ export default async function JavaScriptHandler(script, filePath, fileName) {
 
 function functionTransform(func) {
     if (!BabelTypes.isObjectMethod(func)) throw new Error('This is not a function')
-    const params = func.params.map(item => BabelTypes.identifier(item.name))
-    return BabelTypes.objectProperty(BabelTypes.identifier(func.key.name), BabelTypes.functionExpression(null, params, func.body, func.generator, func.async))
+    return BabelTypes.objectProperty(BabelTypes.identifier(func.key.name), BabelTypes.functionExpression(null, func.params, func.body, func.generator, func.async))
 }
